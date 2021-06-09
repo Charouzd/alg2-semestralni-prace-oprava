@@ -1,0 +1,147 @@
+test//students2020.csv
+test//TEST2020.csv
+
+                           System.out.println(evaluateInter.showSize());
+int choise=sc.nextInt();
+                   switch(choise){
+                       case 1:
+                        break;
+                       case 2:
+                           break;
+                       case 0:
+                           break;
+                           default:
+                    System.out.println("spatne zadana volba");
+     *<h1></h1>
+     * <p>
+     * </p>
+
+package App;
+
+
+import App.Student;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.time.LocalDate;
+
+
+/**
+ *<h1>Absolvent </h1>
+ * <p>object class inheritate from Student class
+ * <p>creates object(Absolvent) with five non inherited proprieties.
+ * 1) Score - point acquire
+ * 2) Grade - final grade calculated by dividing Score by MaxScore and then choosen by fieled of grades
+ * 3) MaxScore - maximum points a student can acquire
+ * 4) Field of grades - array of lowest score you need for the mark 
+ * 5) Passed - boolean vaule, that defines if student passed the test or not
+ * </p>
+ * <p>Important Methods
+ * Grade - return grade and decide if student passed or not
+ * Comparable - to sort absolvents
+ * toString 
+ * </p>
+ * @author Filip Charouzd
+ */
+
+public class Absolvent extends Student implements Comparable<Absolvent> {
+    private double score, grade;
+    private final double maxScore=50;
+    private final double[] grades={88,75,58, 45};
+    private boolean passed;
+    public Absolvent(String name, String lastName, char sex, LocalDate born, int num) {
+        super(name, lastName, sex, born, num);
+    }
+
+    public Absolvent(int score, String name, String lastName, char sex, LocalDate born, int num) {
+        super(name, lastName, sex, born, num);
+        this.score = score;
+
+    }
+    public Absolvent(Student stud, double score) {
+        super(stud.getName(), stud.getLastName(), stud.getSex(), stud.getBorn(), stud.getNumber());
+        this.score = score;
+        grade();
+
+    }
+   private void grade(){
+      if (score<0){
+      score=maxScore-maxScore;
+      }else if(score>50){
+      score=maxScore;
+      }
+       double grade= (score/maxScore)*100;
+       if( grade > grades[0] ){
+           this.grade = 1;
+           passed=true;
+       }else if(grade > grades[1] ){
+           this.grade=2;
+           passed=true;
+       }else if(grade > grades[2] ){
+           this.grade=3;
+           passed=true;
+       }else if(grade > grades[3] ){
+           this.grade=4;
+           passed=true;
+       }else{
+           passed=false;
+           this.grade=Double.NaN;
+       }
+   }
+
+    public double getScore() {
+        return score;
+    }
+
+    public double getGrade() {
+        return grade;
+    }
+
+    @Override
+    public int getNumber() {
+        return number;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getLastName() {
+        return lastName;
+    }
+
+    @Override
+    public char getSex() {
+        return sex;
+    }
+
+    /**
+     *
+     * @return  Returns birthdate dd.mm.yyyy
+     */
+    @Override
+    public LocalDate getBorn() {
+        return born;
+    }
+  
+
+    @Override
+    public String toString() {
+        if(passed==true){
+        return String.format("%s", "Student's number:" + number +"  Name:" + name+" " + lastName + "(" + sex + ") born in " + born+" seccesfuly gradueted for "+grade+"("+(score*100/maxScore)+"%)");
+    }else{
+            return String.format("%s", "Student's number:" + number +"  Name:" + name+" " + lastName + "(" + sex + ") born in " + born+"was unseccesfull because he aquire "+(score*100/maxScore)+"%)");
+        }
+    }
+
+    @Override//comparable
+    public int compareTo(Absolvent o) {
+       return  Double.compare(this.score, o.getScore());
+   
+  }
+
+   
+   }
+
+
