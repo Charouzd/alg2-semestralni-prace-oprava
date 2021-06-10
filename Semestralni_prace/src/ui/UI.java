@@ -161,7 +161,7 @@ public class UI {
         int choise;
         while (again) {
             choise = Menu.usersChoiseSortMenu();
-            switch (choise) {              
+            switch (choise) {
                 case 1://od nejlepšího
                     System.out.println(evaluateInter.sortByScoreFromBest());
                     break;

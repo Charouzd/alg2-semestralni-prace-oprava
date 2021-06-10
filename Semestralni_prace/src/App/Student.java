@@ -30,18 +30,17 @@ public class Student implements Comparable<Student> {
     private TestResults BestResult = new TestResults(number, 0);
     private List<TestResults> results = new ArrayList();
 
-    public Student(String name, String lastName, char sex, LocalDate born, int num)  {
+    public Student(String name, String lastName, char sex, LocalDate born, int num) {
         this.name = name;
         this.lastName = lastName;
         this.sex = sex;
         this.born = born;
         this.number = num;
-        
 
     }
 
     public void searchMyResults(String file) throws IOException {
-        
+
         try (BufferedReader br = new BufferedReader(new FileReader(new File(file)))) {
             String line;
             String[] colums;
@@ -50,7 +49,7 @@ public class Student implements Comparable<Student> {
             br.readLine();//soubor má záhlavý, takže první řádek si načtu(takže dál program bude brát data od tohoto řádku) a prostě s ním nic neudělám
             while ((line = br.readLine()) != null) {
                 colums = line.split(",");
-               
+
                 if (Integer.parseInt(colums[0]) == this.number) {
                     r = new TestResults(Integer.parseInt(colums[0]), Double.parseDouble(colums[1]));
                     results.add(r);
@@ -60,7 +59,7 @@ public class Student implements Comparable<Student> {
                 }
             }
         }
-            
+
     }
 
     public int getNumber() {
@@ -119,7 +118,7 @@ public class Student implements Comparable<Student> {
 
     }
 
-   /* public static void main(String[] args) throws IOException {
+    /* public static void main(String[] args) throws IOException {
 
         Student stud = new Student("Filip", "Charouzd", "M".charAt(0), LocalDate.now(), 1122334);
         List<TestResults> rest = stud.getResults();
