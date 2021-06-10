@@ -60,6 +60,7 @@ public class Student implements Comparable<Student> {
                 }
             }
         }
+            
     }
 
     public int getNumber() {

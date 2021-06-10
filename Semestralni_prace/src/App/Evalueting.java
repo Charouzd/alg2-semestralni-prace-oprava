@@ -98,14 +98,15 @@ public class Evalueting implements EvaluateInterface {
      * This method sort absolvents by score from the worst to best one. Type of
      * sorting compare
      * </p>
-     * @return 
+     *
+     * @return
      */
     @Override
     //Comparator - compare(colections.sort
     public String sortByScoreFromWorst() {
         List<Student> absolvents = searchAbsolvents();
         Collections.sort(absolvents, new Comparing());
-                StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (Student s : absolvents) {
             sb.append(s.absolventToString()).append("\n");
         }
@@ -203,8 +204,10 @@ public class Evalueting implements EvaluateInterface {
                         throw new Exception("spatne zadane stud cislo");
                     }
                     number = Integer.parseInt(colums[4]);
-                    stud = new Student(name, lastName, sex, born, number);
-                    students.add(stud);
+                    if (duplicity(number)) {
+                        stud = new Student(name, lastName, sex, born, number);
+                        students.add(stud);
+                    }
                 } catch (NumberFormatException e) {
                     radky.add(radek);
                 } catch (Exception ex) {
@@ -219,6 +222,16 @@ public class Evalueting implements EvaluateInterface {
                 }
             }
         }
+    }
+
+    private boolean duplicity(int num) {
+
+        for (Student s : students) {
+            if (s.number == num) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
