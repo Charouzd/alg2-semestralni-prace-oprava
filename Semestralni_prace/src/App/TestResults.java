@@ -26,6 +26,7 @@ public class TestResults {
     public TestResults(int studNumber, double score) {
         this.studNumber = studNumber;
         this.score = score;
+        grade();
     }
 
     public double getScore() {
@@ -60,6 +61,11 @@ public class TestResults {
             passed = false;
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return "TestResults{" + "studNumber=" + studNumber + ", score=" + score + ", grade=" + grade + ", passed=" + passed + '}';
     }
 
     public double getGrade() {

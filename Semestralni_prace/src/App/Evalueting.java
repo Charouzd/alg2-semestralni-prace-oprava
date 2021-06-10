@@ -33,18 +33,16 @@ import utils.Comparing;
  * @author Filip Charouzd
  */
 public class Evalueting implements EvaluateInterface {
-    private final String OUTPUT = "data"+File.separator+"results"+File.separator;
-    private final String INPUT = "data"+File.separator+"test"+File.separator;
+
+    private final String OUTPUT = "data" + File.separator + "results" + File.separator;
+    private final String INPUT = "data" + File.separator + "test" + File.separator;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final List<Student> students;
-    private final List<TestResults> results;
-    private final List<Student> absolvents;
 
     public Evalueting() {
 
         students = new ArrayList<>();
-        results = new ArrayList<>();
-        absolvents = new ArrayList<>();
+
     }
 
     /**
@@ -59,7 +57,8 @@ public class Evalueting implements EvaluateInterface {
      */
     @Override
     public void saveToTxt(String fileName) throws IOException {
-        String path = OUTPUT+"  fileName  "+".txt";
+
+        String path = OUTPUT + "  fileName  " + ".txt";
         File myObj = new File(path);
         System.out.println("File created: " + myObj.getName());
         try (FileWriter myWriter = new FileWriter(path)) {
@@ -83,13 +82,13 @@ public class Evalueting implements EvaluateInterface {
      */
     @Override
     public void saveToBin(String fileName) throws FileNotFoundException, IOException {
-        try (DataOutputStream out = new DataOutputStream(new FileOutputStream(OUTPUT+File.separator + fileName + ".dat", false))) {
-            for(Student s : absolvents){
-            out.writeUTF(Integer.toBinaryString(s.number));
-            out.writeUTF(Double.toString(s.getResult().getGrade()));
-            out.writeUTF(Double.toString(s.getResult().getPercentage()));
+        try (DataOutputStream out = new DataOutputStream(new FileOutputStream(OUTPUT + File.separator + fileName + ".dat", false))) {
+            for (Student s : searchAbsolvents()) {
+                out.writeInt(s.number);
+                out.writeDouble(s.getResult().getGrade());
+                out.writeDouble(s.getResult().getPercentage());
             }
-            
+
         }
     }
 
@@ -99,11 +98,18 @@ public class Evalueting implements EvaluateInterface {
      * This method sort absolvents by score from the worst to best one. Type of
      * sorting compare
      * </p>
+     * @return 
      */
     @Override
     //Comparator - compare(colections.sort
-    public void sortByScoreFromWorst() {
+    public String sortByScoreFromWorst() {
+        List<Student> absolvents = searchAbsolvents();
         Collections.sort(absolvents, new Comparing());
+                StringBuilder sb = new StringBuilder();
+        for (Student s : absolvents) {
+            sb.append(s.absolventToString()).append("\n");
+        }
+        return sb.toString();
     }
 
     /**
@@ -112,11 +118,13 @@ public class Evalueting implements EvaluateInterface {
      * This method sort absolvents by score fromt the best to worst one. Type of
      * sorting compare
      * </p>
+     *
+     * @return
      */
     @Override
     //Comparable - comtareTo
-    public void sortByScoreFromBest() {
-
+    public String sortByScoreFromBest() {
+        List<Student> absolvents = searchAbsolvents();
         Student temp;
         for (int i = 0; i < absolvents.size(); i++) {
             for (int j = 0; j < absolvents.size() - i - 1; j++) {
@@ -127,7 +135,11 @@ public class Evalueting implements EvaluateInterface {
                 }
             }
         }
-
+        StringBuilder sb = new StringBuilder();
+        for (Student s : absolvents) {
+            sb.append(s.absolventToString()).append("\n");
+        }
+        return sb.toString();
     }
 
     /**
@@ -137,85 +149,19 @@ public class Evalueting implements EvaluateInterface {
      * not found, he stays as a student. After evaluation students are also
      * absolvents so they are not removed from list
      * </p>
-     */
-    @Override
-    public void getAbsolvets() {
-        int num;
-        Student absolvent;
-        for (int i = 0; i < students.size(); i++) {
-            num = students.get(i).getNumber();
-            try {
-            for (int j = 0; i < results.size(); j++) {
-                
-                    if (num == results.get(j).getNumber()) {
-                        students.get(i).addResult(results.get(j));
-                        absolvents.add(students.get(i));
-                        break;
-                    }
-            }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    
-                }catch(IndexOutOfBoundsException e){
-            
-                }
-            
-        }
-    }
-
-    /**
-     * <h1>Loading resulst</h1>
-     * <p>
-     * this method reads from .csv file result and store them into list
-     * </p>
      *
-     * @param fileName - way to file with results
-     * @throws FileNotFoundException - it is thrown when fili is not foud
-     * @throws IOException - it is thrown when file ureadable
+     * @param fileName - name of the file in subdirectory data\test\
+     * @throws java.io.IOException - when the file doesn't exist or is demaged
+     * @throws java.io.IOException
+     *
      */
     @Override
-    public void loadResults(String fileName) throws FileNotFoundException, IOException, NullPointerException {
-        Pattern p = Pattern.compile("(^[0-9]{7}$)");
-        ArrayList<Integer> radky = new ArrayList();
-        int radek = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader(new File(fileName)))) {//načítání obsahu souboru pomocí streamu; Try ho pak zavře až skočí
-            //proměnné
-            String[] colums;
-            int number, score;
-            String line;
-            TestResults test;
-            br.readLine();//soubor má záhlavý, takže první řádek si načtu(takže dál program bude brát data od tohoto řádku) a prostě s ním nic neudělám
-            //načítání ze souboru
-            while ((line = br.readLine()) != null) {
-                radek++;
-                try {
-                    colums = line.split(",");
-                    Matcher match = p.matcher(colums[0]);
-                    if (!match.find()) {
-                        throw new Exception("spatne zadane stud cislo");
-                    }
-                    number = Integer.parseInt(colums[0]);
+    public void getAbsolvets(String fileName) throws IOException {
+        String file = INPUT + fileName;
+        for (Student s : students) {
+            s.searchMyResults(file);
 
-                    score = Integer.parseInt(colums[1]);
-                    if (score < 0 || score > 50) {
-                        throw new Exception("score mimo rozsah");
-                    }
-                    test = new TestResults(number, score);
-                    results.add(test);
-                } catch (NumberFormatException e) {
-                    radky.add(radek);
-                } catch (Exception ex) {
-                    radky.add(radek);
-                }
-            }
-            if (!radky.isEmpty()) {
-                String s = "Nepodarilo se nacist radky:";
-                for (Integer r : radky) {
-                    s += r;
-                }
-                throw new IllegalArgumentException(s);
-            }
         }
-
     }
 
     /**
@@ -234,7 +180,7 @@ public class Evalueting implements EvaluateInterface {
         ArrayList<Integer> radky = new ArrayList();
         Pattern p = Pattern.compile("(^[0-9]{7}$)");
         int radek = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader(new File(INPUT+fileName)))) {//načítání obsahu souboru pomocí streamu; Try ho pak zavře až skočí
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(INPUT + fileName)))) {//načítání obsahu souboru pomocí streamu; Try ho pak zavře až skočí
             //proměnné
             String[] colums;
             String line, name, lastName;
@@ -298,7 +244,21 @@ public class Evalueting implements EvaluateInterface {
      */
     @Override
     public void addResult(TestResults test) {
-        results.add(test);
+        for (Student s : students) {
+            if (test.getNumber() == s.getNumber()) {
+                s.addResult(test);
+            }
+        }
+    }
+
+    private List<Student> searchAbsolvents() {
+        List<Student> studs = new ArrayList();
+        for (Student s : students) {
+            if (!s.getResults().isEmpty()) {
+                studs.add(s);
+            }
+        }
+        return studs;
     }
 
     /**
@@ -312,7 +272,7 @@ public class Evalueting implements EvaluateInterface {
     @Override
     public String showSize() {
 
-        return String.format("%s", "počet studentů:" + (students.size()) + " počet výsledků" + results.size());
+        return String.format("%s", "počet studentů:" + (students.size()));
     }
 
     /**
@@ -326,9 +286,9 @@ public class Evalueting implements EvaluateInterface {
     @Override
     public String showStudents() {
         StringBuilder sb = new StringBuilder();
-        students.forEach((b) -> {
-            sb.append(b).append("\n");
-        });
+        for (Student s : students) {
+            sb.append(s.toString()).append("\n");
+        }
         return sb.toString();
     }
 
@@ -342,8 +302,9 @@ public class Evalueting implements EvaluateInterface {
      */
     @Override
     public String showAbslovents() {
+
         StringBuilder sb = new StringBuilder();
-      for(Student s : absolvents){
+        for (Student s : searchAbsolvents()) {
             sb.append(s.absolventToString()).append("\n");
         }
         return sb.toString();
@@ -384,5 +345,5 @@ public class Evalueting implements EvaluateInterface {
         document.close();
 
     }
-    
+
 }

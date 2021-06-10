@@ -14,6 +14,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -150,7 +152,6 @@ public class UI {
     }
 
     private static void evaluateResults() {
-        evaluateInter.getAbsolvets();
         System.out.println("vyhodnoceny výsledky");
         System.out.println(evaluateInter.showAbslovents());
     }
@@ -160,16 +161,12 @@ public class UI {
         int choise;
         while (again) {
             choise = Menu.usersChoiseSortMenu();
-            switch (choise) {
-                case 1:// ukaze jak to vypadá
-                    System.out.println(evaluateInter.showAbslovents());
+            switch (choise) {              
+                case 1://od nejlepšího
+                    System.out.println(evaluateInter.sortByScoreFromBest());
                     break;
-
-                case 2://od nejlepšího
-                    evaluateInter.sortByScoreFromBest();
-                    break;
-                case 3://od nejhoršího
-                    evaluateInter.sortByScoreFromWorst();
+                case 2://od nejhoršího
+                    System.out.println(evaluateInter.sortByScoreFromWorst());
                     break;
                 case 0:
                     again = false;
@@ -297,7 +294,7 @@ public class UI {
         String file = "data" + File.separator + "test" + File.separator + "TEST2020.csv";
         {
             try {
-                evaluateInter.loadResults(file);
+                evaluateInter.getAbsolvets(file);
                 System.out.println("Výsledky načteny");
             } catch (IOException ex) {
                 System.out.println("Soubor se nepodarilo najit, nebo je poskozeny.");
@@ -312,7 +309,7 @@ public class UI {
         String file = sc.next();/* "test\\TEST2020.csv";*/
         {
             try {
-                evaluateInter.loadResults(file);
+                evaluateInter.getAbsolvets(file);
                 System.out.println("Výsledky načteny");
             } catch (IOException ex) {
                 System.out.println("Soubor se nepodarilo najit, nebo je poskozeny.");
